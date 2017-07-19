@@ -1,0 +1,34 @@
+service: aws-lambda-polly
+
+provider:
+  name: aws
+  runtime: java8
+  stage: dev
+  region: us-east-2
+  cfLogs: true
+  memorySize: 1536
+  timeout: 60
+  iamRoleStatements:
+    -  Effect: Allow
+       Action: 
+         - ec2:CreateNetworkInterface
+         - ec2:DescribeNetworkInterfaces
+         - ec2:DeleteNetworkInterface
+         - polly:AmazonPollyFullAccess
+         - logs:CreateLogGroup
+         - logs:CreateLogStream
+         - logs:PutLogEvents
+       Resource: "*"
+
+package:
+  artifact: build/distributions/aws-lambda-polly.zip
+
+functions:
+  users:
+    handler: com.serverless.LambdaFunctionHandler
+    events:
+      - http:
+          path: polly/speech
+          method: post
+          cors: true
+           

@@ -1,0 +1,49 @@
+
+plugins {
+  id 'org.springframework.boot' version '1.5.2.RELEASE'
+}
+
+apply plugin: 'groovy'
+apply plugin: 'org.springframework.boot'
+
+springBoot {
+	mainClass = "com.serverless.LambdaFunctionHandler"
+  }
+
+repositories {
+  jcenter()
+  mavenCentral()
+}
+
+dependencies {
+  compile (
+      'org.springframework.boot:spring-boot-starter',
+      'org.springframework.boot:spring-boot-starter-data-jpa',
+	  'org.springframework.boot:spring-boot-starter-web',
+      'org.codehaus.groovy:groovy-all:2.4.7',
+      'com.amazonaws:aws-java-sdk-lambda:1.11.160',
+      'com.amazonaws:aws-lambda-java-log4j:1.0.0',
+	  'com.amazonaws:aws-java-sdk-polly:1.11.160',
+	  'com.amazonaws:aws-java-sdk-s3:1.11.163',
+	  'com.googlecode.soundlibs:jlayer:1.0.1-1',	
+	  'com.amazonaws.serverless:aws-serverless-java-container-jersey:0.5.1'
+	  
+  )
+
+  // Use JUnit test framework
+  testCompile 'junit:junit:4.12'
+}
+
+// Task for building the zip file for upload
+task buildZip(type: Zip) {
+  // set the base name of the zip file
+  baseName = "${project.name}"
+  from compileGroovy
+  from processResources
+  into('lib') {
+    from configurations.runtime
+  }
+}
+
+build.dependsOn buildZip
+
